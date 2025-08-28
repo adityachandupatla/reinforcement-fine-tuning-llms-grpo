@@ -1,0 +1,63 @@
+
+Supervised Fine Tuning (SFT) - Learning from past demonstrations
+
+	Forward Pass
+
+		Training Dataset -- (given to) --> LLM ----> Predicted Output
+
+	Backward Pass
+
+		Predicted Output - (compute loss) --> Loss / Error --> Updated LLM
+
+	In our training dataset, instead of just dumping question-answer pairs, we can also output the explanation or reasoning used to arrive at the answer, such as:
+
+		<think> reasoning traces </think>
+		<answer> final answer </answer>
+
+	This way, the model will learn how to arrive at the answer step-by-step.
+
+	The downside of SFT is that the model may not generalize because we are only teaching it from the training-dataset samples.
+
+Reinforcement learning
+
+	The agent learns to complete a task by trying different actions and receiving rewards, with goal of getting the most reward over time.
+
+	We can apply this to LLM's as follows:
+
+	Example -> LLM -> Response -> Reward -> Updated LLM (and repeat the loop)
+
+	This is really beneficial because we don't require training data! Just a means of verifying correctness is good enough. In practise, we can see the LLM changing its behavior in as few as 10 examples.
+
+	RLHF:
+
+		Step 1: Let the LLM generate multiple responses to a given prompt (we can do this by tuning the temperature parameter)
+
+		Step 2: Let the human rank the responses (this is the feedback!)
+
+		Step 3: We train a separate NN (a reward model) which takes in the prompt and all the responses and trying to generate an output which mimicks the human's ranking. In essence, we are capturing the human's reward in this network.
+
+		Step 4: With the reward model, and an algorithm like PPO we update the weights of the LLM.
+
+	DPO: (Direct Policy Optimization)
+
+		Step 1: Let the LLM generate multiple responses same as RLHF, but not too many. Typically 2-3
+
+		Step 2: Human picks just one good response (typically using thumbs up / down)
+
+		Step 3: We create a preference dataset which has:
+		- a prompt
+		- the chosen response
+		- the discarded response
+
+		Note: This is captured for several prompts.
+
+		Step 4: We use DPO algorithm along with the preference dataset update the model weights
+
+	GRPO (Group Relative Policy Optimization) - Developed by Deepseek
+
+		Step 1: Let the LLM generate multiple responses same as RLHF
+
+		Step 2: Using custom human devloped reward functions we rate all the responses and give it a score
+
+		Step 3: Update the LLM weights using the scores generated in Step 2 and the GRPO algorithm. Essentially, we are teaching the LLM to generate more responses which received higher score, and steer away from responses which generated lower score
+
