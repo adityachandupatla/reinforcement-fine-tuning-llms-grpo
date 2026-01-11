@@ -36,7 +36,7 @@ Reinforcement learning
 
 		Step 3: We train a separate NN (a reward model) which takes in the prompt and all the responses and trying to generate an output which mimicks the human's ranking. In essence, we are capturing the human's reward in this network.
 
-		Step 4: With the reward model, and an algorithm like PPO we update the weights of the LLM.
+		Step 4: With the reward model, and an algorithm like PPO (proximal policy optimization) we update the weights of the LLM.
 
 	DPO: (Direct Policy Optimization)
 
@@ -51,7 +51,7 @@ Reinforcement learning
 
 		Note: This is captured for several prompts.
 
-		Step 4: We use DPO algorithm along with the preference dataset update the model weights
+		Step 4: We use DPO algorithm along with the preference dataset to update the model weights
 
 	GRPO (Group Relative Policy Optimization) - Developed by Deepseek
 
@@ -61,3 +61,31 @@ Reinforcement learning
 
 		Step 3: Update the LLM weights using the scores generated in Step 2 and the GRPO algorithm. Essentially, we are teaching the LLM to generate more responses which received higher score, and steer away from responses which generated lower score
 
+What is "Policy" in RL?
+
+	Policy = The decision-making strategy
+	
+	In abstract terms, a policy is a mapping from states to actions. It answers: "Given where I am right now, what should I do?"
+	
+	Mathematically: π(state) → action
+
+Mental Model for RL algorithms: Think of it as Three Supervision Styles
+
+	RLHF = Hire a Judge
+
+	- You train a "judge" neural network to mimic human preferences
+	- Then use that judge to score everything going forward
+	- Problem: The judge can be gamed, and training it is expensive
+
+	DPO = Direct Teaching
+
+	- Skip the judge entirely
+	- Just show the model "this response good, that response bad" pairs
+	- The math directly bakes preferences into the weights
+	- Problem: Need clean preference pairs, less flexible
+
+	GRPO = Automated Grading
+
+	- You write the rubric yourself (reward functions)
+	- Great for verifiable tasks: "Did the code compile?" "Is the math correct?"
+	- Problem: Only works when you can programmatically verify correctness
